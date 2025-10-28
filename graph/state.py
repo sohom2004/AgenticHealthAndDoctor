@@ -1,0 +1,42 @@
+"""
+State definitions for the LangGraph workflow
+"""
+from typing import TypedDict, Optional, Dict, Any, List
+from typing_extensions import Annotated
+import operator
+
+
+class AgentState(TypedDict):
+    """
+    Main state object that flows through the graph
+    """
+    # Input
+    input_type: str  # "pdf", "image", "audio", "text"
+    file_path: Optional[str]
+    text_input: Optional[str]
+    patient_id: str
+    
+    # OCR/STT outputs
+    extracted_text: Optional[str]
+    confidence: Optional[float]
+    
+    # Document Save outputs
+    report_metadata: Optional[Dict[str, Any]]
+    
+    # Extraction outputs
+    findings: Optional[List[str]]
+    values: Optional[Dict[str, Any]]
+    
+    # Summarizer outputs
+    summary: Optional[str]
+    key_changes: Optional[str]
+    current_values: Optional[Dict[str, Any]]
+    
+    # Final response
+    final_response: Optional[str]
+    
+    # Error handling
+    error: Optional[str]
+    
+    # Routing
+    next_step: Optional[str]
