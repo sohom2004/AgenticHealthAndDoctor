@@ -23,12 +23,11 @@ def query_findings(action_input: str) -> str:
         Relevant findings as formatted string
     """
     try:
-        # Parse input
         if '|' in action_input:
             query, patient_id = action_input.split('|', 1)
         else:
             query = action_input
-            patient_id = "pt-001"  # Default
+            patient_id = "pt-001"
         
         query = query.strip()
         patient_id = patient_id.strip()
@@ -40,7 +39,6 @@ def query_findings(action_input: str) -> str:
             persist_directory=str(CHROMA_DIR)
         )
         
-        # Perform similarity search
         results = vector_store.similarity_search(
             query,
             k=5,
@@ -50,7 +48,6 @@ def query_findings(action_input: str) -> str:
         if not results:
             return f"No findings found for patient {patient_id} matching query: {query}"
         
-        # Format results
         formatted_results = []
         for i, doc in enumerate(results, 1):
             try:
@@ -88,7 +85,6 @@ def get_patient_history(patient_id: str) -> str:
         
         embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
         
-        # Get findings
         findings_store = Chroma(
             collection_name=FINDINGS_COLLECTION,
             embedding_function=embeddings,
@@ -103,7 +99,6 @@ def get_patient_history(patient_id: str) -> str:
         if not findings_results["documents"]:
             return f"No history found for patient {patient_id}"
         
-        # Format history
         history = f"Patient History for {patient_id}\n"
         history += "=" * 60 + "\n\n"
         

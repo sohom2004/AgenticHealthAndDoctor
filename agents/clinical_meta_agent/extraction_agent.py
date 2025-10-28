@@ -68,10 +68,8 @@ def run_extraction(metadata: dict) -> dict:
     
     response = agent.invoke({"input": prompt})
     
-    # Extract findings from response
     output = response.get("output", "")
     
-    # Parse output
     try:
         import ast
         result = ast.literal_eval(output)

@@ -22,18 +22,15 @@ def clean_json_response(content: str) -> str:
     Returns:
         Clean JSON string
     """
-    # Remove markdown code blocks
     if '```json' in content:
         content = content.split('```json')[1].split('```')[0].strip()
     elif '```' in content:
-        # Try to find JSON between any code blocks
         parts = content.split('```')
         for part in parts:
             if '{' in part and '}' in part:
                 content = part.strip()
                 break
     
-    # Extract JSON object using regex if still not clean
     json_match = re.search(r'\{.*\}', content, re.DOTALL)
     if json_match:
         content = json_match.group(0)
@@ -113,18 +110,13 @@ def run_summarization(patient_id: str) -> dict:
         "history": json.dumps(history)
     })
     
-    # Parse the response
     try:
-        # Extract JSON from response
         content = response.content if hasattr(response, 'content') else str(response)
         
-        # Clean the response
         content = clean_json_response(content)
         
-        # Try to parse as JSON
         result = json.loads(content)
         
-        # Ensure all required keys exist with defaults
         return {
             "summary": result.get("summary", "No summary available"),
             "key_changes": result.get("key_changes", "No changes detected"),
@@ -133,7 +125,6 @@ def run_summarization(patient_id: str) -> dict:
     except json.JSONDecodeError as e:
         print(f"JSON Parse Error: {e}")
         print(f"Attempted to parse: {content[:500]}")
-        # Fallback: try to extract values manually
         return {
             "summary": content,
             "key_changes": "Unable to extract changes",
@@ -142,7 +133,6 @@ def run_summarization(patient_id: str) -> dict:
     except Exception as e:
         print(f"Error parsing summarizer response: {e}")
         print(f"Raw response type: {type(response)}")
-        # Fallback parsing
         return {
             "summary": str(response),
             "key_changes": "Unable to extract changes",

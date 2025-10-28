@@ -72,15 +72,11 @@ def run_ocr_extraction(file_path: str) -> dict:
     
     response = agent.invoke({"input": prompt})
     
-    # Extract the result from the response
     output = response.get("output", "")
     
-    # Parse output to extract content and confidence
-    # The agent should return a dict-like string
     try:
         import ast
         result = ast.literal_eval(output)
         return result
     except:
-        # Fallback: return as is
         return {"content": output, "confidence": 0.0}

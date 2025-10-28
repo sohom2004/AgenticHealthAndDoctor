@@ -49,9 +49,7 @@ def run_document_save(text_data: dict, patient_id: str) -> dict:
     Returns:
         Metadata dictionary
     """
-    # Direct storage with proper patient_id
     from tools.document_tools import store_content
     content = text_data.get("content", "")
     
-    # Ensure patient_id is passed explicitly
     return store_content(content, patient_id=patient_id)

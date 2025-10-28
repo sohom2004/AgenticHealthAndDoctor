@@ -61,7 +61,6 @@ def get_ocr(imgs) -> dict:
     Returns:
         Dictionary with 'content' and 'confidence'
     """
-    # Handle string input
     if isinstance(imgs, str):
         try:
             imgs = ast.literal_eval(imgs)

@@ -57,7 +57,6 @@ def run_stt_extraction(file_path: str) -> str:
     
     response = agent.invoke({"input": prompt})
     
-    # Extract the transcribed text from response
     output = response.get("output", "")
     
     return output

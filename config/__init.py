@@ -1,10 +1,8 @@
-# config/__init__.py
 """
 Configuration module for the Medical Agentic System
 """
 from config.settings import *
 
-# tools/__init__.py
 """
 Tools module containing utility functions for agents
 """
@@ -15,12 +13,10 @@ from tools.extraction_tools import get_content, save_findings
 from tools.summarizer_tools import get_all_findings, get_recent_findings
 from tools.chat_tools import query_findings, get_patient_history
 
-# agents/__init__.py
 """
 Agents module containing all agent implementations
 """
 
-# agents/head_meta_agent/__init__.py
 """
 Head Meta Agent module
 """
@@ -30,7 +26,6 @@ from agents.head_meta_agent.document_save_agent import create_document_save_agen
 from agents.head_meta_agent.chat_agent import create_chat_agent, run_chat
 from agents.head_meta_agent.head_agent import process_input, save_document
 
-# agents/clinical_meta_agent/__init__.py
 """
 Clinical Meta Agent module
 """
@@ -38,7 +33,6 @@ from agents.clinical_meta_agent.extraction_agent import create_extraction_agent,
 from agents.clinical_meta_agent.summarizer_agent import create_summarizer_agent, run_summarization
 from agents.clinical_meta_agent.clinical_agent import extract_findings, summarize_report
 
-# graph/__init__.py
 """
 Graph module containing LangGraph workflow definitions
 """
@@ -53,7 +47,6 @@ from graph.nodes import (
 )
 from graph.workflow import create_workflow, run_workflow
 
-# storage/__init__.py
 """
 Storage module for ChromaDB
 """

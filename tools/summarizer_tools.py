@@ -69,7 +69,6 @@ def get_recent_findings(user_id: str) -> dict:
     if not results.get("documents"):
         return {}
     
-    # Return the last document
     last_doc = results["documents"][-1]
     try:
         return json.loads(last_doc)

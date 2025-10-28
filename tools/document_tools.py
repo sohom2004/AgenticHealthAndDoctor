@@ -28,7 +28,6 @@ def extract_report_data(text: str) -> tuple:
     Returns:
         Tuple of (report_date, confidence)
     """
-    # Extract date
     match = (
         re.search(r"\b(\d{4}-\d{2}-\d{2})\b", text)
         or re.search(r"\b(\d{1,2}/\d{1,2}/\d{2,4})\b", text)
@@ -47,7 +46,6 @@ def extract_report_data(text: str) -> tuple:
     if not report_date:
         report_date = datetime.now().date().isoformat()
 
-    # Extract confidence
     conf_match = re.search(r"'confidence'\s*:\s*([0-9]*\.?[0-9]+)", text)
     confidence = float(conf_match.group(1)) if conf_match else None
 
@@ -170,12 +168,11 @@ def store_content(text: str, patient_id: str = DEFAULT_PATIENT_ID) -> dict:
     """
     report_date, confidence = extract_report_data(str(text))
     
-    # Explicitly pass patient_id
     document, metadata = convert_text_to_document(
         report_date, 
         confidence, 
         text, 
-        patient_id=patient_id  # ← Ensure patient_id is used
+        patient_id=patient_id
     )
     chunks = split_document(document)
     store_in_chroma(chunks)

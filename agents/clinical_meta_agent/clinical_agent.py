@@ -61,7 +61,6 @@ def summarize_report(state: AgentState) -> AgentState:
         state["key_changes"] = summary_result.get("key_changes", "")
         state["current_values"] = summary_result.get("current_values", {})
         
-        # Build final response
         final_response = f"""
 MEDICAL REPORT SUMMARY
 {'='*50}

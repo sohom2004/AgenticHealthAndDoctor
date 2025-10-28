@@ -25,12 +25,10 @@ def get_content(metadata: str) -> str:
     Returns:
         Complete report text
     """
-    # Extract report_id from metadata string
     pattern = r"'report_id':\s*'([^']+)'"
     match = re.search(pattern, str(metadata))
     
     if not match:
-        # Try alternate pattern
         pattern = r'"report_id":\s*"([^"]+)"'
         match = re.search(pattern, str(metadata))
     
@@ -67,7 +65,6 @@ def save_findings(action_input: dict) -> str:
     Returns:
         Success message
     """
-    # Parse if string
     if isinstance(action_input, str):
         action_input = ast.literal_eval(action_input)
     
@@ -85,7 +82,6 @@ def save_findings(action_input: dict) -> str:
         persist_directory=str(CHROMA_DIR)
     )
     
-    # Create document with findings
     document = Document(
         page_content=json.dumps(
             {"findings": findings, "values": values},

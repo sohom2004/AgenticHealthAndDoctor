@@ -18,7 +18,6 @@ def determine_intent(text_input: str) -> str:
     Returns:
         "report" or "chat"
     """
-    # Simple heuristics to determine intent
     report_keywords = [
         "blood test", "lab result", "scan", "x-ray", "mri", 
         "diagnosis", "prescription", "medical report", "test result"
@@ -31,19 +30,15 @@ def determine_intent(text_input: str) -> str:
     
     text_lower = text_input.lower()
     
-    # Check for chat indicators
     has_chat_keywords = any(keyword in text_lower for keyword in chat_keywords)
     has_report_keywords = any(keyword in text_lower for keyword in report_keywords)
     
-    # If it's a question or query, treat as chat
     if "?" in text_input or has_chat_keywords and not has_report_keywords:
         return "chat"
     
-    # If it has report keywords or looks like medical data, treat as report
     if has_report_keywords or len(text_input.split()) > 50:
         return "report"
     
-    # Default to chat for short queries
     return "chat"
 
 
@@ -80,7 +75,6 @@ def process_input(state: AgentState) -> AgentState:
             state["next_step"] = "save_document"
             
         elif input_type == "text":
-            # Determine if it's a report or a chat query
             intent = determine_intent(text_input)
             
             if intent == "chat":
