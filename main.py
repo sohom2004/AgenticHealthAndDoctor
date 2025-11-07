@@ -4,7 +4,7 @@ Continuous terminal-based interface
 """
 import sys
 from pathlib import Path
-from graph.workflow import run_workflow
+from graph.workflow import run_report_workflow, run_search_workflow
 from tools.ocr_tools import cleanup_temp_files
 
 
@@ -18,6 +18,7 @@ def print_banner():
     print("  --file <path>     : Process a file (PDF, image, audio)")
     print("  --text <message>  : Send a text message or query")
     print("  --patient <id>    : Set current patient ID (default: pt-001)")
+    print("  --search          : Search for doctors based on your medical report")
     print("  --help            : Show this help message")
     print("  --exit / quit     : Exit the system")
     print("="*70 + "\n")
@@ -36,6 +37,11 @@ def print_help():
     print("  --text What is my cholesterol level?")
     print("  --text Show me my medical history")
     print("  --text Blood pressure: 145/90, Glucose: 110 mg/dL")
+    print("\nDoctor Search:")
+    print("  --search")
+    print("  find doctors")
+    print("  search for doctors")
+    print("  find me a doctor")
     print("\nChange Patient:")
     print("  --patient pt-002")
     print("\nCombined:")
@@ -44,7 +50,52 @@ def print_help():
     print("  > --text What were my last test results?")
     print("  > --file blood-test.pdf")
     print("  > --patient pt-002 --text Show history")
+    print("  > --search")
+    print("  > find me a cardiologist")
     print("="*70 + "\n")
+
+
+def is_search_command(text: str) -> bool:
+    """
+    Checks if the text is a doctor search command
+    
+    Args:
+        text: User input text
+        
+    Returns:
+        True if it's a search command, False otherwise
+    """
+    search_keywords = [
+        'find doctor',
+        'find doctors',
+        'search doctor',
+        'search doctors',
+        'find me a doctor',
+        'find me doctors',
+        'look for doctor',
+        'look for doctors',
+        'recommend doctor',
+        'recommend doctors',
+        'need a doctor',
+        'need doctor',
+        'show me doctors',
+        'get doctors',
+        'locate doctor',
+        'locate doctors'
+    ]
+    
+    text_lower = text.lower().strip()
+    
+    # Check for explicit --search flag
+    if '--search' in text_lower or text_lower == 'search':
+        return True
+    
+    # Check for search keywords
+    for keyword in search_keywords:
+        if keyword in text_lower:
+            return True
+    
+    return False
 
 
 def parse_command(command: str, current_patient: str) -> dict:
@@ -75,7 +126,8 @@ def parse_command(command: str, current_patient: str) -> dict:
         "action": "process",
         "file_path": None,
         "text_input": None,
-        "patient_id": current_patient
+        "patient_id": current_patient,
+        "is_search": False
     }
     
     # Check for --patient flag
@@ -92,6 +144,12 @@ def parse_command(command: str, current_patient: str) -> dict:
             command = command + ' ' + remaining
     
     command = command.strip()
+    
+    # Check if this is a search command
+    if is_search_command(command):
+        result["is_search"] = True
+        result["action"] = "search"
+        return result
     
     # Check for --file flag
     if '--file' in command:
@@ -119,9 +177,33 @@ def parse_command(command: str, current_patient: str) -> dict:
     return result
 
 
-def process_command(cmd_dict: dict) -> str:
+def process_search_command(patient_id: str) -> str:
     """
-    Processes a parsed command
+    Processes a doctor search command
+    
+    Args:
+        patient_id: Patient identifier
+        
+    Returns:
+        Response string with doctor search results
+    """
+    try:
+        print(f"\n🔍 Searching for doctors based on your medical report...")
+        print(f"👤 Patient ID: {patient_id}")
+        print("⏳ Please wait...\n")
+        
+        # Run search workflow
+        result = run_search_workflow(patient_id=patient_id)
+        
+        return result.get("final_response", "No search results generated")
+        
+    except Exception as e:
+        return f"ERROR: Search failed - {str(e)}"
+
+
+def process_report_command(cmd_dict: dict) -> str:
+    """
+    Processes a report/file command
     
     Args:
         cmd_dict: Parsed command dictionary
@@ -158,7 +240,7 @@ def process_command(cmd_dict: dict) -> str:
             print("⏳ Please wait...\n")
             
             # Run workflow
-            result = run_workflow(
+            result = run_report_workflow(
                 input_type=input_type,
                 file_path=str(file_path_obj),
                 patient_id=patient_id
@@ -175,7 +257,7 @@ def process_command(cmd_dict: dict) -> str:
             print("⏳ Please wait...\n")
             
             # Run workflow
-            result = run_workflow(
+            result = run_report_workflow(
                 input_type="text",
                 text_input=text_input,
                 patient_id=patient_id
@@ -229,14 +311,24 @@ def main():
                 print(f"\n❌ {cmd_dict.get('message')}\n")
                 continue
             
+            elif cmd_dict["action"] == "search":
+                # Update current patient if changed
+                if cmd_dict["patient_id"] != current_patient:
+                    current_patient = cmd_dict["patient_id"]
+                    print(f"\n✓ Switched to Patient ID: {current_patient}\n")
+                
+                # Process search command
+                response = process_search_command(current_patient)
+                print(f"\n{response}\n")
+            
             elif cmd_dict["action"] == "process":
                 # Update current patient if changed
                 if cmd_dict["patient_id"] != current_patient:
                     current_patient = cmd_dict["patient_id"]
                     print(f"\n✓ Switched to Patient ID: {current_patient}\n")
                 
-                # Process the command
-                response = process_command(cmd_dict)
+                # Process the report command
+                response = process_report_command(cmd_dict)
                 print(f"\n{response}\n")
         
         except KeyboardInterrupt:

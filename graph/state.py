@@ -34,8 +34,11 @@ class AgentState(TypedDict):
     
     # Doctor Search outputs
     doctor_type: Optional[str]
-    location: Optional[str]
-    search_params: Optional[str]
+    location: Optional[Dict[str, str]]
+    search_results: Optional[Dict[str, Any]]
+    top_doctors: Optional[List[Dict[str, Any]]]
+    total_results: Optional[int]
+    raw_search_output: Optional[str] 
 
     # Final response
     final_response: Optional[str]

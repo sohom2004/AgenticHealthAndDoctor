@@ -8,17 +8,20 @@ from graph.nodes import (
     document_save_node,
     extraction_node,
     summarization_node,
+    search_params_node,
+    doctor_search_node,
+    search_error_node,
     error_node,
     route_next_step
 )
 
 
-def create_workflow():
+def create_report_workflow():
     """
-    Creates the LangGraph workflow for the medical agentic system
+    Creates the LangGraph workflow for report processing and summarization
     
     Returns:
-        Compiled LangGraph workflow
+        Compiled LangGraph workflow for report processing
     """
     workflow = StateGraph(AgentState)
     
@@ -76,14 +79,55 @@ def create_workflow():
     return app
 
 
-def run_workflow(
+def create_search_workflow():
+    """
+    Creates the LangGraph workflow for doctor search
+    
+    Returns:
+        Compiled LangGraph workflow for doctor search
+    """
+    workflow = StateGraph(AgentState)
+    
+    workflow.add_node("get_search_params", search_params_node)
+    workflow.add_node("search_doctors", doctor_search_node)
+    workflow.add_node("search_error", search_error_node)
+    
+    workflow.set_entry_point("get_search_params")
+    
+    workflow.add_conditional_edges(
+        "get_search_params",
+        route_next_step,
+        {
+            "search_doctors": "search_doctors",
+            "error": "search_error",
+            "end": END
+        }
+    )
+    
+    workflow.add_conditional_edges(
+        "search_doctors",
+        route_next_step,
+        {
+            "end": END,
+            "error": "search_error"
+        }
+    )
+    
+    workflow.add_edge("search_error", END)
+    
+    app = workflow.compile()
+    
+    return app
+
+
+def run_report_workflow(
     input_type: str,
     file_path: str = None,
     text_input: str = None,
     patient_id: str = "pt-001" 
 ) -> dict:
     """
-    Runs the complete workflow
+    Runs the complete report processing and summarization workflow
     
     Args:
         input_type: Type of input ("pdf", "image", "audio", "text")
@@ -92,7 +136,7 @@ def run_workflow(
         patient_id: Patient identifier
         
     Returns:
-        Final state dictionary
+        Final state dictionary with report summary
     """
     initial_state = {
         "input_type": input_type,
@@ -107,12 +151,60 @@ def run_workflow(
         "summary": None,
         "key_changes": None,
         "current_values": None,
+        "doctor_type": None,
+        "location": None,
+        "search_params": None,
+        "search_results": None,
+        "top_doctors": None,
+        "total_results": None,
+        "raw_search_output": None,
         "final_response": None,
         "error": None,
         "next_step": None
     }
     
-    app = create_workflow()
+    app = create_report_workflow()
+    result = app.invoke(initial_state)
+    
+    return result
+
+
+def run_search_workflow(patient_id: str) -> dict:
+    """
+    Runs the doctor search workflow independently
+    
+    Args:
+        patient_id: Patient identifier
+        
+    Returns:
+        Final state dictionary with doctor search results
+    """
+    initial_state = {
+        "input_type": None,
+        "file_path": None,
+        "text_input": None,
+        "patient_id": patient_id,
+        "extracted_text": None,
+        "confidence": None,
+        "report_metadata": None,
+        "findings": None,
+        "values": None,
+        "summary": None,
+        "key_changes": None,
+        "current_values": None,
+        "doctor_type": None,
+        "location": None,
+        "search_params": None,
+        "search_results": None,
+        "top_doctors": None,
+        "total_results": None,
+        "raw_search_output": None,
+        "final_response": None,
+        "error": None,
+        "next_step": None
+    }
+    
+    app = create_search_workflow()
     result = app.invoke(initial_state)
     
     return result

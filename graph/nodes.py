@@ -4,6 +4,7 @@ Node functions for LangGraph workflow
 from graph.state import AgentState
 from agents.head_meta_agent.head_agent import process_input, save_document
 from agents.clinical_meta_agent.clinical_agent import extract_findings, summarize_report
+from agents.search_meta_agent.search_meta_agent import get_search_parameters, find_doctors, handle_search_error
 
 
 def input_node(state: AgentState) -> AgentState:
@@ -33,6 +34,24 @@ def summarization_node(state: AgentState) -> AgentState:
     """
     return summarize_report(state)
 
+def search_params_node(state: AgentState) -> AgentState:
+    """
+    Gets search parameters (doctor type and location) through Search Meta Agent
+    """
+    return get_search_parameters(state)
+
+
+def doctor_search_node(state: AgentState) -> AgentState:
+    """
+    Searches for doctors through Search Meta Agent
+    """
+    return find_doctors(state)
+
+def search_error_node(state: AgentState) -> AgentState:
+    """
+    Handles search-specific errors through Search Meta Agent
+    """
+    return handle_search_error(state)
 
 def error_node(state: AgentState) -> AgentState:
     """

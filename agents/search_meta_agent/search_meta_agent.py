@@ -25,22 +25,26 @@ def get_search_parameters(state: AgentState) -> AgentState:
         if not patient_id:
             raise ValueError("No patient_id found in state")
         
-        # Run location and search term agent
         result = run_search_term_and_location(patient_id)
         
         doctor_type = result.get("doctor_type", "Unknown")
-        location = result.get("location", {})
+        location = result.get("location", {})  
         
         if doctor_type == "Unknown" or doctor_type == "Unable to determine":
             raise ValueError("Could not determine appropriate doctor specialization")
         
         state["doctor_type"] = doctor_type
-        state["location"] = location
-        state["search_params"] = result
+        state["location"] = location  
+        state["search_params"] = result 
         
         print(f"✅ Search parameters determined:")
         print(f"   Doctor Type: {doctor_type}")
         print(f"   Location: {location.get('city', 'Unknown')}, {location.get('state', 'Unknown')}")
+
+        print("debug lines")
+        print(f"state['location']: {state['location']}")
+        print(f"state['doctor_type']: {state['doctor_type']}")
+        print(f"state['search_params']: {state['search_params']}")
         
         state["next_step"] = "search_doctors"
         
@@ -67,8 +71,21 @@ def find_doctors(state: AgentState) -> AgentState:
     try:
         search_params = state.get("search_params")
         
+        print(f"DEBUG: search_params from state: {search_params}")
+        
         if not search_params:
-            raise ValueError("No search parameters found in state")
+            
+            doctor_type = state.get("doctor_type")
+            location = state.get("location")
+            
+            if doctor_type and location:
+                search_params = {
+                    "doctor_type": doctor_type,
+                    "location": location
+                }
+                print(f"DEBUG: Reconstructed search_params: {search_params}")
+            else:
+                raise ValueError("No search parameters found in state and cannot reconstruct")
         
         doctor_type = search_params.get("doctor_type")
         location = search_params.get("location", {})
@@ -78,13 +95,10 @@ def find_doctors(state: AgentState) -> AgentState:
         
         print(f"🔍 Searching for {doctor_type} in {location.get('city', 'Unknown')}...")
         
-        # Run doctor search agent
         search_results = search_doctors(search_params, top_n=5)
         
-        # Parse the output if it's a string
         if isinstance(search_results, str):
             try:
-                # Clean up markdown if present
                 if '```json' in search_results:
                     search_results = search_results.split('```json')[1].split('```')[0].strip()
                 elif '```' in search_results:
@@ -99,13 +113,11 @@ def find_doctors(state: AgentState) -> AgentState:
                 print(f"⚠️ Warning: Could not parse search results as JSON: {e}")
                 state["raw_search_output"] = search_results
         
-        # Check if there's an error in the results
         if isinstance(search_results, dict) and "error" in search_results:
             raise ValueError(f"Search failed: {search_results['error']}")
         
         state["search_results"] = search_results
         
-        # Extract top results for easier access
         if isinstance(search_results, dict):
             top_results = search_results.get("top_results", [])
             total_results = search_results.get("total_results", 0)
@@ -118,7 +130,6 @@ def find_doctors(state: AgentState) -> AgentState:
         
         print(f"✅ Found {total_results} doctors, returning top {len(top_results)}")
         
-        # Format final response
         final_response = format_search_results(
             doctor_type=doctor_type,
             location=location,
@@ -131,6 +142,8 @@ def find_doctors(state: AgentState) -> AgentState:
         
     except Exception as e:
         print(f"❌ Error searching for doctors: {e}")
+        import traceback
+        traceback.print_exc()
         state["error"] = str(e)
         state["next_step"] = "error"
     
