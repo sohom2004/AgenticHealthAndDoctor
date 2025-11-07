@@ -3,7 +3,7 @@ Summarizer Agent for generating patient summaries
 """
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
-from tools.summarizer_tools import get_all_findings
+from tools.summarizer_tools import get_all_findings, store_summaries
 from config.settings import GOOGLE_API_KEY, LLM_MODEL
 import json
 import re
@@ -48,7 +48,7 @@ def create_summarizer_agent():
     llm = ChatGoogleGenerativeAI(
         model=LLM_MODEL,
         google_api_key=GOOGLE_API_KEY,
-        temperature=0.3  # Lower temperature for more consistent output
+        temperature=0.3
     )
     
     prompt = PromptTemplate(
@@ -116,6 +116,22 @@ def run_summarization(patient_id: str) -> dict:
         content = clean_json_response(content)
         
         result = json.loads(content)
+        
+        # 🔥 FIX: Convert the result dict to a formatted string before storing
+        summary_text = f"""MEDICAL REPORT SUMMARY
+        ==================================================
+
+        {result.get('summary', 'No summary available')}
+
+        KEY CHANGES:
+        {result.get('key_changes', 'No changes detected')}
+
+        CURRENT VALUES:
+        {json.dumps(result.get('current_values', {}), indent=2)}
+        """
+        
+        # Pass the formatted string instead of the dict
+        store_summaries(summary_text, patient_id)
         
         return {
             "summary": result.get("summary", "No summary available"),

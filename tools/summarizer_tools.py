@@ -2,12 +2,15 @@
 Summarizer tools for retrieving patient findings history
 """
 import json
+from datetime import datetime
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
+from langchain.docstore.document import Document
 from config.settings import (
     CHROMA_DIR,
     EMBEDDING_MODEL,
-    FINDINGS_COLLECTION
+    FINDINGS_COLLECTION,
+    SUMMARY_COLLECTION
 )
 
 
@@ -74,3 +77,25 @@ def get_recent_findings(user_id: str) -> dict:
         return json.loads(last_doc)
     except Exception:
         return {}
+    
+def store_summaries(summary: str, user_id: str):
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    vector_store = Chroma(
+        collection_name=SUMMARY_COLLECTION,
+        embedding_function=embeddings,
+        persist_directory=str(CHROMA_DIR)
+    )
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    current_timestamp = datetime.now().isoformat()
+
+    document = Document(
+        page_content=summary,
+        metadata={
+            "user_id": user_id,
+            "date": current_date,
+            "timestamp": current_timestamp
+        }
+    )
+    vector_store.add_documents(documents=[document])
+    print(f"✅ Saved summary for user {user_id} on {current_date}")
+    return "Summaries saved successfully"

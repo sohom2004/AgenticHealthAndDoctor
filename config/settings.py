@@ -17,7 +17,7 @@ TEMP_DIR.mkdir(exist_ok=True)
 CHROMA_DIR.mkdir(exist_ok=True)
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+IPGEOLOCATION_API_KEY = os.getenv("IPGEOLOCATION_API_KEY")
 
 LLM_MODEL = "gemini-2.5-flash"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
@@ -25,6 +25,7 @@ WHISPER_MODEL = "base"
 
 REPORT_COLLECTION = "patient-report-collection"
 FINDINGS_COLLECTION = "patient-report-findings"
+SUMMARY_COLLECTION = "patient-report-summaries"
 
 OCR_LANGUAGES = ['en']
 OCR_GPU = True

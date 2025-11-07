@@ -55,33 +55,34 @@ def get_content(metadata: str) -> str:
     return txt
 
 
-def save_findings(action_input: dict) -> str:
-    """
-    Saves extracted findings and values to ChromaDB
-    
-    Args:
-        action_input: Dict with 'findings', 'values', and 'metadata'
-        
-    Returns:
-        Success message
-    """
+def save_findings(action_input) -> str:
+
     if isinstance(action_input, str):
-        action_input = ast.literal_eval(action_input)
-    
+        try:
+            action_input = json.loads(action_input)
+        except json.JSONDecodeError:
+            try:
+                action_input = ast.literal_eval(action_input)
+            except Exception as e:
+                raise ValueError(f"Invalid input format for save_findings: {e}")
+
+    if not isinstance(action_input, dict):
+        raise ValueError("save_findings input must be a dict or valid JSON string")
+
     findings = action_input.get("findings")
     values = action_input.get("values")
     metadata = action_input.get("metadata")
-    
+
     if not metadata:
         raise ValueError("Metadata is required")
-    
+
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     vector_store = Chroma(
         collection_name=FINDINGS_COLLECTION,
         embedding_function=embeddings,
         persist_directory=str(CHROMA_DIR)
     )
-    
+
     document = Document(
         page_content=json.dumps(
             {"findings": findings, "values": values},
@@ -89,8 +90,7 @@ def save_findings(action_input: dict) -> str:
         ),
         metadata=metadata
     )
-    
+
     vector_store.add_documents(documents=[document])
-    print(f"Saved findings for report {metadata.get('report_id')}")
-    
+    print(f"✅ Saved findings for report {metadata.get('report_id')}")
     return "Findings saved successfully"
