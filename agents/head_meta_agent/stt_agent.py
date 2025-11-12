@@ -1,6 +1,3 @@
-"""
-Speech-to-Text Agent for transcribing audio
-"""
 from langchain.agents import initialize_agent, Tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools.stt_tools import transcribe

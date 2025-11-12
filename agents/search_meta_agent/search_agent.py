@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 import json
 import traceback
+from config.settings import GOOGLE_API_KEY, LLM_MODEL
+
 
 load_dotenv()
 
@@ -42,11 +44,6 @@ def scraper_wrapper(input_str: str):
 
 def create_search_agent():
     """Initialize the LangChain agent with Google Gemini"""
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-exp",
-        google_api_key=os.getenv("GOOGLE_API_KEY"),
-        temperature=0
-    )
 
     tools = [
         Tool(
@@ -61,13 +58,17 @@ def create_search_agent():
         )
     ]
 
+    llm = ChatGoogleGenerativeAI(
+        model=LLM_MODEL,
+        google_api_key=GOOGLE_API_KEY
+    )
+    
     agent = initialize_agent(
         tools=tools,
         llm=llm,
         agent="zero-shot-react-description",
         verbose=True,
-        handle_parsing_errors=True,
-        max_iterations=3
+        handle_parsing_errors=True
     )
 
     return agent

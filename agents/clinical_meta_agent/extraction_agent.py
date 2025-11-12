@@ -1,6 +1,3 @@
-"""
-Extraction Agent for extracting medical findings and values
-"""
 from langchain.agents import initialize_agent, Tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools.extraction_tools import get_content, save_findings

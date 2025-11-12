@@ -1,6 +1,3 @@
-"""
-Node functions for LangGraph workflow
-"""
 from graph.state import AgentState
 from agents.head_meta_agent.head_agent import process_input, save_document
 from agents.clinical_meta_agent.clinical_agent import extract_findings, summarize_report

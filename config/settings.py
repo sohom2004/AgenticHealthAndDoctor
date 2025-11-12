@@ -1,6 +1,3 @@
-"""
-Configuration settings for the Medical Agentic System
-"""
 import os
 from pathlib import Path
 from dotenv import load_dotenv

@@ -1,6 +1,3 @@
-"""
-OCR-related tools for document processing
-"""
 import os
 import ast
 from pdf2image import convert_from_path

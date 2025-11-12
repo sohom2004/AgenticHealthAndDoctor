@@ -1,6 +1,3 @@
-"""
-Search Meta Agent - Orchestrates Location/Search Term and Doctor Search agents
-"""
 from agents.search_meta_agent.location_and_search_term import run_search_term_and_location
 from agents.search_meta_agent.search_agent import search_doctors
 from graph.state import AgentState

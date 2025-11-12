@@ -1,6 +1,3 @@
-"""
-Extraction tools for retrieving and saving medical findings
-"""
 import re
 import ast
 import json

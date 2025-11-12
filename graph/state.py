@@ -1,15 +1,9 @@
-"""
-State definitions for the LangGraph workflow
-"""
 from typing import TypedDict, Optional, Dict, Any, List
 from typing_extensions import Annotated
 import operator
 
 
 class AgentState(TypedDict):
-    """
-    Main state object that flows through the graph
-    """
     # Input
     input_type: str  # "pdf", "image", "audio", "text"
     file_path: Optional[str]

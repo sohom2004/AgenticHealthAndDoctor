@@ -1,6 +1,3 @@
-"""
-Summarizer Agent for generating patient summaries
-"""
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from tools.summarizer_tools import get_all_findings, store_summaries

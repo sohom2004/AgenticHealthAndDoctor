@@ -1,6 +1,3 @@
-"""
-Summarizer tools for retrieving patient findings history
-"""
 import json
 from datetime import datetime
 from langchain_huggingface import HuggingFaceEmbeddings

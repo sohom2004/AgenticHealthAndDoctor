@@ -1,6 +1,3 @@
-"""
-Document storage and retrieval tools for ChromaDB
-"""
 import re
 from datetime import datetime
 from uuid import uuid4

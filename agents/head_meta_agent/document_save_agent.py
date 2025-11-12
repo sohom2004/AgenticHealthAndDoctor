@@ -1,6 +1,3 @@
-"""
-Document Save Agent for storing reports in ChromaDB
-"""
 from langchain.agents import initialize_agent, Tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools.document_tools import store_content

@@ -1,6 +1,3 @@
-"""
-Head Meta Agent - Orchestrates OCR, STT, Document Save, and Chat agents
-"""
 from agents.head_meta_agent.ocr_agent import run_ocr_extraction
 from agents.head_meta_agent.stt_agent import run_stt_extraction
 from agents.head_meta_agent.document_save_agent import run_document_save

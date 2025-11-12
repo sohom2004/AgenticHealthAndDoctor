@@ -1,6 +1,3 @@
-"""
-Clinical Meta Agent - Orchestrates Extraction and Summarizer agents
-"""
 from agents.clinical_meta_agent.extraction_agent import run_extraction
 from agents.clinical_meta_agent.summarizer_agent import run_summarization
 from graph.state import AgentState

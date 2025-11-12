@@ -1,6 +1,3 @@
-"""
-Speech-to-Text tools using Whisper
-"""
 import whisper
 from config.settings import WHISPER_MODEL
 

@@ -1,6 +1,3 @@
-"""
-Chat tools for querying patient data and findings
-"""
 import json
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma

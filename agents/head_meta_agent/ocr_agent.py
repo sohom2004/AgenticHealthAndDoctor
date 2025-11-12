@@ -1,6 +1,3 @@
-"""
-OCR Agent for extracting text from documents
-"""
 from langchain.agents import initialize_agent, Tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools.ocr_tools import get_file_type, convert_to_jpg, get_ocr

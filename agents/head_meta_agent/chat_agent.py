@@ -1,6 +1,3 @@
-"""
-Chat Agent for general purpose conversations and queries
-"""
 from langchain.agents import initialize_agent, Tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools.chat_tools import query_findings, get_patient_history
