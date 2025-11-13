@@ -1,7 +1,3 @@
-Here is a comprehensive `README.md` for the **Agentic Health & Doctor** project, based on the provided code and configuration files.
-
------
-
 # 🏥 Agentic Health & Doctor System
 
 A sophisticated AI-powered medical assistant built using **LangGraph**, **LangChain**, and **Google Gemini**. This system acts as an autonomous agent that can ingest medical reports (PDF, Images, Audio), extract clinical findings, maintain patient history via a vector database, and intelligently search for relevant medical specialists using Google Maps.
